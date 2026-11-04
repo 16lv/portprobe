@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "network-diagnostic-toolkit"
-version = "1.0.0"
+version = "1.2.0"
 description = "Python network connectivity and DNS diagnostic utility using the Python standard library"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,7 +17,9 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
+pythonpath = [".", "src"]
 testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.ruff]
 line-length = 100
