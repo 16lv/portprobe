@@ -1,5 +1,7 @@
 # Network Diagnostic Toolkit (Python)
 
+![CI Status](https://github.com/16lv/network-diagnostic-toolkit/actions/workflows/ci.yml/badge.svg)
+
 A lightweight, cross-platform network connectivity and DNS troubleshooting utility written in **Python 3.12** using the standard library (`socket`, `ipaddress`, `time`).
 
 ## Overview
