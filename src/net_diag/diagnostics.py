@@ -34,7 +34,7 @@ class TcpProbeResult:
 
 
 def validate_host(host: str) -> str:
-    """Validates a hostname or IPv4/IPv6 literal, raising ValueError on malformed inputs."""
+    # Check if it's a valid IPv4/IPv6 literal first, otherwise validate as a hostname
     cleaned = host.strip()
     if not cleaned:
         raise ValueError("Host must not be empty")
