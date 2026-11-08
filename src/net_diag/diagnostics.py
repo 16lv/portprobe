@@ -142,10 +142,24 @@ def build_diagnostic_report(
     timeout_seconds: float = 3.0,
 ) -> dict[str, Any]:
     dns_result = resolve_dns(host)
-    tcp_results = [
-        check_tcp_connectivity(host, port, timeout_seconds=timeout_seconds)
-        for port in ports
-    ]
+    # Use the validated hostname from dns_result and skip TCP probes if DNS failed
+    if dns_result.resolved:
+        tcp_results = [
+            check_tcp_connectivity(dns_result.host, port, timeout_seconds=timeout_seconds)
+            for port in ports
+        ]
+    else:
+        tcp_results = [
+            TcpProbeResult(
+                host=dns_result.host,
+                port=port,
+                reachable=False,
+                elapsed_ms=0.0,
+                status="SKIPPED_DNS_FAILURE",
+                explanation="Skipped TCP handshake because hostname resolution failed.",
+            )
+            for port in ports
+        ]
     return {
         "generated_at": datetime.now(UTC).isoformat(),
         "target_host": dns_result.host,
