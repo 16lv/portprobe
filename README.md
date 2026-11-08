@@ -1,6 +1,6 @@
-# Network Diagnostic Toolkit (Python)
+﻿# PortProbe
 
-![CI Status](https://github.com/16lv/network-diagnostic-toolkit/actions/workflows/ci.yml/badge.svg)
+![CI Status](https://github.com/16lv/portprobe/actions/workflows/ci.yml/badge.svg)
 
 A lightweight, cross-platform network connectivity and DNS troubleshooting utility written in **Python 3.12** using the standard library (`socket`, `ipaddress`, `time`).
 
@@ -20,3 +20,4 @@ All unit tests mock socket calls so they run deterministically without making ex
 ruff check .
 pytest -v
 ```
+
