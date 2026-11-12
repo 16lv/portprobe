@@ -1,12 +1,12 @@
-# PortProbe
+# TCP & DNS Diagnostics (tcp-dns-diagnostics)
 
-![CI Status](https://github.com/16lv/portprobe/actions/workflows/ci.yml/badge.svg)
+![CI Status](https://github.com/16lv/tcp-dns-diagnostics/actions/workflows/ci.yml/badge.svg)
 
-**PortProbe** is a lightweight, cross-platform network connectivity and DNS troubleshooting utility written in **Python 3.12** using the standard library (`socket`, `ipaddress`, `time`).
+**TCP & DNS Diagnostics** ($(System.Collections.Hashtable.newRepo)) is a lightweight, cross-platform network connectivity and DNS troubleshooting utility written in **Python 3.12** using the standard library (`socket`, `ipaddress`, `time`).
 
 ## Why I Built It
 
-When debugging a self-hosted service that won't load, `ping` is often unhelpful because cloud security groups drop ICMP echo packets, while a generic browser error hides whether DNS failed, a firewall dropped the packet, or the application process crashed. I built PortProbe to separate DNS resolution from per-port TCP three-way handshakes and classify each failure state clearly.
+When debugging a self-hosted service that won't load, `ping` is often unhelpful because cloud security groups drop ICMP echo packets, while a generic browser error hides whether DNS failed, a firewall dropped the packet, or the application process crashed. I built TCP & DNS Diagnostics to separate DNS resolution from per-port TCP three-way handshakes and classify each failure state clearly.
 
 ## Failure Classification
 
