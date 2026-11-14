@@ -65,7 +65,13 @@ def test_build_diagnostic_report_aggregates_dns_and_tcp_checks() -> None:
         patch("socket.getaddrinfo", return_value=fake_addrinfo),
         patch("socket.create_connection", return_value=MagicMock()),
     ):
-        report = build_diagnostic_report("localhost", [80, 443])
+        report = build_diagnostic_report("localhost", [80, 443, 80])
         assert report["dns"]["resolved"] is True
         assert len(report["tcp_checks"]) == 2
+        assert [c["port"] for c in report["tcp_checks"]] == [80, 443]
         assert report["tcp_checks"][0]["status"] == "CONNECTED"
+
+    with pytest.raises(ValueError, match="must contain at least one"):
+        build_diagnostic_report("localhost", [])
+    with pytest.raises(ValueError, match="Invalid TCP port"):
+        build_diagnostic_report("localhost", [70000])

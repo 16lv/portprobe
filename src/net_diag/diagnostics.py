@@ -4,6 +4,7 @@ import ipaddress
 import re
 import socket
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from typing import Any
@@ -141,13 +142,28 @@ def build_diagnostic_report(
     ports: list[int],
     timeout_seconds: float = 3.0,
 ) -> dict[str, Any]:
+    if timeout_seconds <= 0.0:
+        raise ValueError("timeout_seconds must be positive")
+    if not ports:
+        raise ValueError("ports must contain at least one TCP port")
+
+    unique_ports = list(dict.fromkeys(ports))
+    for port in unique_ports:
+        if isinstance(port, bool) or not (1 <= port <= 65535):
+            raise ValueError(f"Invalid TCP port: {port}. Expected integer in 1..65535.")
+
     dns_result = resolve_dns(host)
-    # Use the validated hostname from dns_result and skip TCP probes if DNS failed
     if dns_result.resolved:
-        tcp_results = [
-            check_tcp_connectivity(dns_result.host, port, timeout_seconds=timeout_seconds)
-            for port in ports
-        ]
+        max_workers = min(len(unique_ports), 16)
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            tcp_results = list(
+                pool.map(
+                    lambda p: check_tcp_connectivity(
+                        dns_result.host, p, timeout_seconds=timeout_seconds
+                    ),
+                    unique_ports,
+                )
+            )
     else:
         tcp_results = [
             TcpProbeResult(
@@ -158,7 +174,7 @@ def build_diagnostic_report(
                 status="SKIPPED_DNS_FAILURE",
                 explanation="Skipped TCP handshake because hostname resolution failed.",
             )
-            for port in ports
+            for port in unique_ports
         ]
     return {
         "generated_at": datetime.now(UTC).isoformat(),
@@ -166,7 +182,7 @@ def build_diagnostic_report(
         "dns": asdict(dns_result),
         "tcp_checks": [asdict(r) for r in tcp_results],
         "note": (
-            "Note: ICMP echo (ping) is often filtered by firewalls; TCP handshake checks "
-            "provide a more reliable indicator of service availability on specific ports."
+            "TCP handshake checks give a more reliable view of port reachability "
+            "than ICMP echo when firewalls filter ping traffic."
         ),
     }
